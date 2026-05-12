@@ -26,6 +26,12 @@ class IntubationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void startIntubation(int patientId) {
+    _currentIntubation = Intubation(patientId: patientId);
+    _currentStep = 1;
+    notifyListeners();
+  }
+
   void updateIntubation(Intubation intubation) {
     _currentIntubation = intubation;
     notifyListeners();

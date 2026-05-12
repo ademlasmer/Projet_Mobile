@@ -102,4 +102,18 @@ class DatabaseService {
     int id = row['id'];
     return await db.update('intubations', row, where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<int> insertUser(Map<String, dynamic> row) async {
+    final db = await instance.database;
+    return await db.insert('users', row);
+  }
+
+  Future<Map<String, dynamic>?> getUserByEmail(String email) async {
+    final db = await instance.database;
+    final results = await db.query('users', where: 'email = ?', whereArgs: [email]);
+    if (results.isNotEmpty) {
+      return results.first;
+    }
+    return null;
+  }
 }

@@ -27,10 +27,13 @@ class DashboardScreen extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const PatientListScreen()));
                   }),
                   _buildDashboardCard(context, 'Nouvelle Intubation', Icons.medical_services, () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const Step1Antecedents()));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Veuillez sélectionner un patient depuis la Liste des Patients pour démarrer une intubation.')),
+                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const PatientListScreen()));
                   }),
-                  _buildDashboardCard(context, 'Rapports PDF', Icons.picture_as_pdf, () {
-                    // Show reports
+                  _buildDashboardCard(context, 'Dossiers Patients', Icons.folder, () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const PatientListScreen()));
                   }),
                 ],
               ),

@@ -1,10 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:printing/printing.dart';
 import '../providers/patient_provider.dart';
+import '../providers/intubation_provider.dart';
 import '../widgets/patient_card.dart';
+import '../services/pdf_service.dart';
+import '../models/intubation.dart';
+import 'intubation_form/step1_antecedents.dart';
 
 class PatientListScreen extends StatelessWidget {
   const PatientListScreen({Key? key}) : super(key: key);
+
+  void _generateAndShowPdf(BuildContext context, patient) async {
+    // Basic implementation: take the first intubation of this patient
+    final provider = Provider.of<IntubationProvider>(context, listen: false);
+    final intubations = provider.intubations.where((i) => i.patientId == patient.id).toList();
+    if (intubations.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Aucune intubation pour ce patient.')));
+      return;
+    }
+    
+    final pdfService = PdfService();
+    final pdfBytes = await pdfService.generatePdf(patient, intubations.first);
+    
+    await Printing.layoutPdf(onLayout: (format) async => pdfBytes);
+  }
+
+  void _showPatientActions(BuildContext context, patient) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.add),
+              title: const Text('Nouvelle Intubation'),
+              onTap: () {
+                Navigator.pop(ctx);
+                Provider.of<IntubationProvider>(context, listen: false).startIntubation(patient.id!);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const Step1Antecedents()));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.history),
+              title: const Text('Voir le dossier (PDF)'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _generateAndShowPdf(context, patient);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +66,7 @@ class PatientListScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              onChanged: (value) => patientProvider.setSearchQuery(value),
               decoration: InputDecoration(
                 hintText: 'Rechercher un patient...',
                 prefixIcon: const Icon(Icons.search),
@@ -34,9 +84,7 @@ class PatientListScreen extends StatelessWidget {
           final patient = patientProvider.patients[index];
           return PatientCard(
             patient: patient,
-            onTap: () {
-              // Action when tapped
-            },
+            onTap: () => _showPatientActions(context, patient),
           );
         },
       ),

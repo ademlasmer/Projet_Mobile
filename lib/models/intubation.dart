@@ -100,4 +100,47 @@ class Intubation {
       audioPath: map['audioPath'],
     );
   }
+  Intubation copyWith({
+    int? id,
+    int? patientId,
+    String? antecedents,
+    bool? saos,
+    bool? diabete,
+    bool? goitre,
+    int? scoreAsa,
+    String? mallampati,
+    String? dtm,
+    String? ouvertureBuccale,
+    String? difficultePrevue,
+    String? typeIntubation,
+    int? tentatives,
+    bool? utiliseVideoLaryngoscope,
+    int? scoreCormack,
+    bool? intubationDifficile,
+    String? complicationsLibres,
+    String? photosPath,
+    String? audioPath,
+  }) {
+    return Intubation(
+      id: id ?? this.id,
+      patientId: patientId ?? this.patientId,
+      antecedents: antecedents ?? this.antecedents,
+      saos: saos ?? this.saos,
+      diabete: diabete ?? this.diabete,
+      goitre: goitre ?? this.goitre,
+      scoreAsa: scoreAsa ?? this.scoreAsa,
+      mallampati: mallampati ?? this.mallampati,
+      dtm: dtm ?? this.dtm,
+      ouvertureBuccale: ouvertureBuccale ?? this.ouvertureBuccale,
+      difficultePrevue: difficultePrevue ?? this.difficultePrevue,
+      typeIntubation: typeIntubation ?? this.typeIntubation,
+      tentatives: tentatives ?? this.tentatives,
+      utiliseVideoLaryngoscope: utiliseVideoLaryngoscope ?? this.utiliseVideoLaryngoscope,
+      scoreCormack: scoreCormack ?? this.scoreCormack,
+      intubationDifficile: intubationDifficile ?? this.intubationDifficile,
+      complicationsLibres: complicationsLibres ?? this.complicationsLibres,
+      photosPath: photosPath ?? this.photosPath,
+      audioPath: audioPath ?? this.audioPath,
+    );
+  }
 }

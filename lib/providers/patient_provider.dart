@@ -4,11 +4,20 @@ import '../services/database_service.dart';
 
 class PatientProvider with ChangeNotifier {
   List<Patient> _patients = [];
+  String _searchQuery = '';
   
-  List<Patient> get patients => _patients;
+  List<Patient> get patients {
+    if (_searchQuery.isEmpty) return _patients;
+    return _patients.where((p) => p.nom.toLowerCase().contains(_searchQuery.toLowerCase()) || p.prenom.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+  }
 
   PatientProvider() {
     loadPatients();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
   }
 
   Future<void> loadPatients() async {
