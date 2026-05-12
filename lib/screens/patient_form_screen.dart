@@ -16,15 +16,52 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
   final TextEditingController _nomController = TextEditingController();
   final TextEditingController _prenomController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _sexeController = TextEditingController();
+  String _sexe = 'M';
   final TextEditingController _bmiController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nomController.dispose();
+    _prenomController.dispose();
+    _dateController.dispose();
+    _bmiController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.teal,
+              onPrimary: Colors.white,
+              surface: Color(0xFF1E1E1E),
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: const Color(0xFF121212),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _dateController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      });
+    }
+  }
 
   void _savePatient() {
     if (_formKey.currentState!.validate()) {
       final patient = Patient(
         nom: _nomController.text,
         prenom: _prenomController.text,
-        sexe: _sexeController.text.isNotEmpty ? _sexeController.text : 'M',
+        sexe: _sexe,
         dateNaissance: DateTime.tryParse(_dateController.text) ?? DateTime.now(),
         bmi: double.tryParse(_bmiController.text) ?? 20.0,
       );
@@ -57,19 +94,34 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _dateController, 
-                decoration: const InputDecoration(labelText: 'Date de naissance (AAAA-MM-JJ)', border: OutlineInputBorder()),
+                controller: _dateController,
+                readOnly: true,
+                onTap: () => _selectDate(context),
+                decoration: const InputDecoration(
+                  labelText: 'Date de naissance (AAAA-MM-JJ)', 
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.calendar_today),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Ce champ est requis';
-                  if (DateTime.tryParse(value) == null) return 'Format invalide (AAAA-MM-JJ)';
                   return null;
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _sexeController, 
-                decoration: const InputDecoration(labelText: 'Sexe (M/F)', border: OutlineInputBorder()),
-                validator: (value) => value == null || value.isEmpty ? 'Ce champ est requis' : null,
+              DropdownButtonFormField<String>(
+                value: _sexe,
+                decoration: const InputDecoration(labelText: 'Sexe', border: OutlineInputBorder()),
+                items: const [
+                  DropdownMenuItem(value: 'M', child: Text('Masculin (M)')),
+                  DropdownMenuItem(value: 'F', child: Text('Féminin (F)')),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _sexe = value;
+                    });
+                  }
+                },
               ),
               const SizedBox(height: 16),
               TextFormField(

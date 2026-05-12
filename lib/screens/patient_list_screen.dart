@@ -49,6 +49,31 @@ class PatientListScreen extends StatelessWidget {
                 _generateAndShowPdf(context, patient);
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Supprimer le patient', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(ctx);
+                showDialog(
+                  context: context,
+                  builder: (dialogCtx) => AlertDialog(
+                    title: const Text('Confirmer la suppression'),
+                    content: const Text('Êtes-vous sûr de vouloir supprimer ce patient et toutes ses intubations associées ? Cette action est irréversible.'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(dialogCtx), child: const Text('Annuler')),
+                      TextButton(
+                        onPressed: () {
+                          Provider.of<PatientProvider>(context, listen: false).deletePatient(patient.id!);
+                          Navigator.pop(dialogCtx);
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Patient supprimé avec succès')));
+                        },
+                        child: const Text('Supprimer', style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  )
+                );
+              },
+            ),
           ],
         );
       },

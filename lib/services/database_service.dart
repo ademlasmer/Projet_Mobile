@@ -87,6 +87,11 @@ class DatabaseService {
     return await db.update('patients', row, where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<int> deletePatient(int id) async {
+    final db = await instance.database;
+    return await db.delete('patients', where: 'id = ?', whereArgs: [id]);
+  }
+
   Future<int> insertIntubation(Map<String, dynamic> row) async {
     final db = await instance.database;
     return await db.insert('intubations', row);
@@ -101,6 +106,11 @@ class DatabaseService {
     final db = await instance.database;
     int id = row['id'];
     return await db.update('intubations', row, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> deleteIntubation(int id) async {
+    final db = await instance.database;
+    return await db.delete('intubations', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<int> insertUser(Map<String, dynamic> row) async {

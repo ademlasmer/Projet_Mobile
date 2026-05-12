@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/patient_provider.dart';
 import 'patient_list_screen.dart';
 import 'patient_form_screen.dart';
 import 'intubation_form/step1_antecedents.dart';
@@ -40,8 +42,36 @@ class DashboardScreen extends StatelessWidget {
             ),
             const Divider(),
             const Text('Derniers dossiers', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const Expanded(
-              child: Center(child: Text('Aucun dossier récent')),
+            Expanded(
+              child: Consumer<PatientProvider>(
+                builder: (context, provider, child) {
+                  if (provider.patients.isEmpty) {
+                    return const Center(child: Text('Aucun dossier récent'));
+                  }
+                  final recentPatients = provider.patients.reversed.take(3).toList();
+                  return ListView.builder(
+                    itemCount: recentPatients.length,
+                    itemBuilder: (context, index) {
+                      final p = recentPatients[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.teal,
+                            child: Text(p.nom[0].toUpperCase()),
+                          ),
+                          title: Text('${p.nom} ${p.prenom}'),
+                          subtitle: Text('ID: ${p.id} - Ajouté récemment'),
+                          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const PatientListScreen()));
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             )
           ],
         ),

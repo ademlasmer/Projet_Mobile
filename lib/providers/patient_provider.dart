@@ -45,4 +45,10 @@ class PatientProvider with ChangeNotifier {
     _patients = patients;
     notifyListeners();
   }
+
+  Future<void> deletePatient(int id) async {
+    await DatabaseService.instance.deletePatient(id);
+    _patients.removeWhere((p) => p.id == id);
+    notifyListeners();
+  }
 }
